@@ -6,6 +6,16 @@ from dotenv import load_dotenv
 load_dotenv()
 
 def get_authenticity_token(login_url, headers):
+    """Get the authenticity token and session
+
+    Args:
+        login_url (str): Login URL
+        headers (dict): Headers
+
+    Returns:
+        session (obj): Session
+        authenticity_token (str): Authenticity token
+    """
     session = requests.Session()
     response = session.get(login_url, headers=headers)
     soup = BeautifulSoup(response.text, 'html.parser')
@@ -13,6 +23,22 @@ def get_authenticity_token(login_url, headers):
     return session, authenticity_token
 
 def login(session, login_url, authenticity_token, headers, email, password):
+    """Login to the website
+
+    Args:
+        session (obj): Session
+        login_url (str): Login URL
+        authenticity_token (str): Authenticity token
+        headers (dict): Headers
+        email (str): Email
+        password (str): Password
+
+    Raises:
+        Exception: Failed to login
+
+    Returns:
+        None
+    """
     data = {
         'authenticity_token': authenticity_token,
         'user[email]': email,
@@ -24,6 +50,16 @@ def login(session, login_url, authenticity_token, headers, email, password):
         raise Exception("Failed to login: {}".format(response.status_code))
 
 def get_current_dates(session, headers):
+    """Get the current appointment dates
+
+    Args:
+        session (obj): Session
+        headers (dict): Headers
+
+    Returns:
+        consulate_date (str): Consulate date
+        cas_date (str): CAS date
+    """
     response = session.get('https://ais.usvisa-info.com/es-co/niv/schedule/47029779/calendar', headers=headers)
     soup = BeautifulSoup(response.text, 'html.parser')
     consulate_date = soup.find('div', {'class': 'consulate-date'}).text.strip()
@@ -31,6 +67,17 @@ def get_current_dates(session, headers):
     return consulate_date, cas_date
 
 def search_available_date(reschedule_url, session, headers, current_date):
+    """Search for an available date
+
+    Args:
+        reschedule_url (str): Reschedule URL
+        session (obj): Session
+        headers (dict): Headers
+        current_date (str): Current date
+
+    Returns:
+        date (str): Available date or None
+    """
     response = session.get(reschedule_url, headers=headers)
     soup = BeautifulSoup(response.text, 'html.parser')
     available_dates = soup.find_all('a', {'class': 'calendar-date'})
@@ -40,6 +87,20 @@ def search_available_date(reschedule_url, session, headers, current_date):
     return None
 
 def reschedule_appointment(session, reschedule_url, headers, new_date):
+    """Reschedule appointment
+
+    Args:
+        session (obj): Session
+        reschedule_url (str): Reschedule URL
+        headers (dict): Headers
+        new_date (str): New date
+
+    Raises:
+        Exception: Failed to reschedule appointment
+
+    Returns:
+        None
+    """
     response = session.get(new_date, headers=headers)
     soup = BeautifulSoup(response.text, 'html.parser')
     authenticity_token = soup.find('input', {'name': 'authenticity_token'})['value']
@@ -53,12 +114,27 @@ def reschedule_appointment(session, reschedule_url, headers, new_date):
         raise Exception("Failed to reschedule appointment: {}".format(response.status_code))
 
 def logout(session, logout_url, headers):
+    """Logout from the website
+
+    Args:
+        session (obj): Session
+        logout_url (str): Logout URL
+        headers (dict): Headers
+
+    Returns:
+        None
+    """
     session.get(logout_url, headers=headers)
     session.close()
     print('Session closed')
 
 
 def find_and_reschedule_appointment():
+    """Find and reschedule appointment
+
+    Retruns:
+        None
+    """
     # Define las credenciales de inicio de sesión
     login_url = os.getenv('URL_LOGIN')
     reschedule_url = os.getenv('URL_RESCHEDULE')
