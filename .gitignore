@@ -1,0 +1,24 @@
+# Ignorar archivos generados por Python
+*.pyc
+__pycache__/
+
+# Ignorar archivos de ambiente
+.env
+
+# Ignorar archivos de configuración
+config.json
+config.yaml
+
+# Ignorar otros archivos generados o privados
+*.log
+*.swp
+*.swo
+
+# Environments
+.env
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
