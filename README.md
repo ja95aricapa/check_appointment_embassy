@@ -21,4 +21,4 @@ This script is used to check if there are available appointments in the US Embas
 
 ## Author
 
-[Jaime Aricapa](https://github.com/ja95aricapa/check_appointment_embassy)
+[Jaime Aricapa](https://github.com/ja95aricapa)
